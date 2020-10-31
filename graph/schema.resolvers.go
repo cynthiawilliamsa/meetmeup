@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/cynthiawilliamsa/meetmeup/data"
@@ -14,7 +15,18 @@ import (
 )
 
 func (r *meetupResolver) User(ctx context.Context, obj *shared.Meetup) (*shared.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	users := data.Users
+	user := new(shared.User)
+	for _, u := range users {
+		if u.ID == obj.UserID {
+			user = u
+			break
+		}
+	}
+	if user == nil {
+		return nil, errors.New("user does not exist")
+	}
+	return user, nil
 }
 
 func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetup) (*shared.Meetup, error) {
