@@ -16,7 +16,6 @@ exec:
 model:
   filename: graph/model/models_gen.go
   package: model
-
 # Where should the resolver implementations go?
 resolver:
   layout: follow-schema
@@ -43,6 +42,14 @@ autobind:
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
+  User:
+    fields:
+      meetups:
+        resolver: true
+  Meetup:
+    fields:
+      meetups:
+        resolver: true
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID
