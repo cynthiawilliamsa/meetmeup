@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/cynthiawilliamsa/meetmeup/graph/model"
+	"github.com/cynthiawilliamsa/meetmeup/graph/shared"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -35,6 +36,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Meetup() MeetupResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 	User() UserResolver
@@ -67,14 +69,17 @@ type ComplexityRoot struct {
 	}
 }
 
+type MeetupResolver interface {
+	User(ctx context.Context, obj *shared.Meetup) (*shared.User, error)
+}
 type MutationResolver interface {
-	CreateMeetup(ctx context.Context, input model.NewMeetup) (*model.Meetup, error)
+	CreateMeetup(ctx context.Context, input model.NewMeetup) (*shared.Meetup, error)
 }
 type QueryResolver interface {
-	Meetups(ctx context.Context) ([]*model.Meetup, error)
+	Meetups(ctx context.Context) ([]*shared.Meetup, error)
 }
 type UserResolver interface {
-	Meetups(ctx context.Context, obj *model.User) ([]*model.Meetup, error)
+	Meetups(ctx context.Context, obj *shared.User) ([]*shared.Meetup, error)
 }
 
 type executableSchema struct {
@@ -333,7 +338,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Meetup_id(ctx context.Context, field graphql.CollectedField, obj *model.Meetup) (ret graphql.Marshaler) {
+func (ec *executionContext) _Meetup_id(ctx context.Context, field graphql.CollectedField, obj *shared.Meetup) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -368,7 +373,7 @@ func (ec *executionContext) _Meetup_id(ctx context.Context, field graphql.Collec
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Meetup_name(ctx context.Context, field graphql.CollectedField, obj *model.Meetup) (ret graphql.Marshaler) {
+func (ec *executionContext) _Meetup_name(ctx context.Context, field graphql.CollectedField, obj *shared.Meetup) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -403,7 +408,7 @@ func (ec *executionContext) _Meetup_name(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Meetup_description(ctx context.Context, field graphql.CollectedField, obj *model.Meetup) (ret graphql.Marshaler) {
+func (ec *executionContext) _Meetup_description(ctx context.Context, field graphql.CollectedField, obj *shared.Meetup) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -438,7 +443,7 @@ func (ec *executionContext) _Meetup_description(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Meetup_user(ctx context.Context, field graphql.CollectedField, obj *model.Meetup) (ret graphql.Marshaler) {
+func (ec *executionContext) _Meetup_user(ctx context.Context, field graphql.CollectedField, obj *shared.Meetup) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -449,14 +454,14 @@ func (ec *executionContext) _Meetup_user(ctx context.Context, field graphql.Coll
 		Object:     "Meetup",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.User, nil
+		return ec.resolvers.Meetup().User(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -468,9 +473,9 @@ func (ec *executionContext) _Meetup_user(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*shared.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createMeetup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -510,9 +515,9 @@ func (ec *executionContext) _Mutation_createMeetup(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Meetup)
+	res := resTmp.(*shared.Meetup)
 	fc.Result = res
-	return ec.marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetup(ctx, field.Selections, res)
+	return ec.marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetup(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_meetups(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -542,9 +547,9 @@ func (ec *executionContext) _Query_meetups(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Meetup)
+	res := resTmp.([]*shared.Meetup)
 	fc.Result = res
-	return ec.marshalOMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetupᚄ(ctx, field.Selections, res)
+	return ec.marshalOMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetupᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -618,7 +623,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *shared.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -653,7 +658,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *shared.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -688,7 +693,7 @@ func (ec *executionContext) _User_username(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *shared.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -723,7 +728,7 @@ func (ec *executionContext) _User_email(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_meetups(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_meetups(ctx context.Context, field graphql.CollectedField, obj *shared.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -753,9 +758,9 @@ func (ec *executionContext) _User_meetups(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Meetup)
+	res := resTmp.([]*shared.Meetup)
 	fc.Result = res
-	return ec.marshalNMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetupᚄ(ctx, field.Selections, res)
+	return ec.marshalNMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetupᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -1883,7 +1888,7 @@ func (ec *executionContext) unmarshalInputNewMeetup(ctx context.Context, obj int
 
 var meetupImplementors = []string{"Meetup"}
 
-func (ec *executionContext) _Meetup(ctx context.Context, sel ast.SelectionSet, obj *model.Meetup) graphql.Marshaler {
+func (ec *executionContext) _Meetup(ctx context.Context, sel ast.SelectionSet, obj *shared.Meetup) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, meetupImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -1895,23 +1900,32 @@ func (ec *executionContext) _Meetup(ctx context.Context, sel ast.SelectionSet, o
 		case "id":
 			out.Values[i] = ec._Meetup_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Meetup_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "description":
 			out.Values[i] = ec._Meetup_description(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "user":
-			out.Values[i] = ec._Meetup_user(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Meetup_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1997,7 +2011,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *shared.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2321,11 +2335,11 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) marshalNMeetup2githubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetup(ctx context.Context, sel ast.SelectionSet, v model.Meetup) graphql.Marshaler {
+func (ec *executionContext) marshalNMeetup2githubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetup(ctx context.Context, sel ast.SelectionSet, v shared.Meetup) graphql.Marshaler {
 	return ec._Meetup(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetupᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Meetup) graphql.Marshaler {
+func (ec *executionContext) marshalNMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetupᚄ(ctx context.Context, sel ast.SelectionSet, v []*shared.Meetup) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2349,7 +2363,7 @@ func (ec *executionContext) marshalNMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsa
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetup(ctx, sel, v[i])
+			ret[i] = ec.marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetup(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2362,7 +2376,7 @@ func (ec *executionContext) marshalNMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsa
 	return ret
 }
 
-func (ec *executionContext) marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetup(ctx context.Context, sel ast.SelectionSet, v *model.Meetup) graphql.Marshaler {
+func (ec *executionContext) marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetup(ctx context.Context, sel ast.SelectionSet, v *shared.Meetup) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2392,7 +2406,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2githubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐUser(ctx context.Context, sel ast.SelectionSet, v shared.User) graphql.Marshaler {
+	return ec._User(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐUser(ctx context.Context, sel ast.SelectionSet, v *shared.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2655,7 +2673,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) marshalOMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetupᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Meetup) graphql.Marshaler {
+func (ec *executionContext) marshalOMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetupᚄ(ctx context.Context, sel ast.SelectionSet, v []*shared.Meetup) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -2682,7 +2700,7 @@ func (ec *executionContext) marshalOMeetup2ᚕᚖgithubᚗcomᚋcynthiawilliamsa
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋmodelᚐMeetup(ctx, sel, v[i])
+			ret[i] = ec.marshalNMeetup2ᚖgithubᚗcomᚋcynthiawilliamsaᚋmeetmeupᚋgraphᚋsharedᚐMeetup(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

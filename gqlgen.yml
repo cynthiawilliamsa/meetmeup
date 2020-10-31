@@ -43,12 +43,14 @@ autobind:
 # your liking
 models:
   User:
+    model: github.com/cynthiawilliamsa/meetmeup/graph/shared.User
     fields:
       meetups:
         resolver: true
   Meetup:
+    model: github.com/cynthiawilliamsa/meetmeup/graph/shared.Meetup
     fields:
-      meetups:
+      user:
         resolver: true
   ID:
     model:
