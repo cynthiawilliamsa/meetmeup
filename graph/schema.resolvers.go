@@ -38,7 +38,13 @@ func (r *queryResolver) Meetups(ctx context.Context) ([]*shared.Meetup, error) {
 }
 
 func (r *userResolver) Meetups(ctx context.Context, obj *shared.User) ([]*shared.Meetup, error) {
-	return nil, nil
+	meetups := data.Meetups
+	for _, m := range meetups {
+		if m.ID == obj.ID {
+			meetups = append(meetups, m)
+		}
+	}
+	return meetups, nil
 }
 
 // Meetup returns generated.MeetupResolver implementation.
