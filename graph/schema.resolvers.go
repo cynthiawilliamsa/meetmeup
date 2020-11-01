@@ -34,7 +34,7 @@ func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeet
 }
 
 func (r *queryResolver) Meetups(ctx context.Context) ([]*shared.Meetup, error) {
-	return data.Meetups, nil
+	return r.DBRepo.GetMeetups()
 }
 
 func (r *userResolver) Meetups(ctx context.Context, obj *shared.User) ([]*shared.Meetup, error) {
