@@ -6,7 +6,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/cynthiawilliamsa/meetmeup/data"
 	"github.com/cynthiawilliamsa/meetmeup/graph/generated"
@@ -15,22 +14,22 @@ import (
 )
 
 func (r *meetupResolver) User(ctx context.Context, obj *shared.Meetup) (*shared.User, error) {
-	users := data.Users
-	user := new(shared.User)
-	for _, u := range users {
-		if u.ID == obj.UserID {
-			user = u
-			break
-		}
-	}
-	if user == nil {
-		return nil, errors.New("user does not exist")
-	}
-	return user, nil
+	return r.DBRepo.FindByID(obj.UserID)
 }
 
 func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetup) (*shared.Meetup, error) {
-	panic(fmt.Errorf("not implemented"))
+	if len(input.Name) < 2 {
+		return nil, errors.New("name not long enough")
+	}
+	if len(input.Description) < 3 {
+		return nil, errors.New("description not long enough")
+	}
+	meetup := &shared.Meetup{
+		Name:        input.Name,
+		Description: input.Description,
+		UserID:      "4",
+	}
+	return r.DBRepo.CreateMeetup(meetup)
 }
 
 func (r *queryResolver) Meetups(ctx context.Context) ([]*shared.Meetup, error) {
