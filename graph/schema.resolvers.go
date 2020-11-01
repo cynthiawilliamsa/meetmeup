@@ -14,6 +14,7 @@ import (
 )
 
 func (r *meetupResolver) User(ctx context.Context, obj *shared.Meetup) (*shared.User, error) {
+	// return GetUserLoader(ctx).Load(obj.UserID)
 	return r.DBRepo.FindByID(obj.UserID)
 }
 

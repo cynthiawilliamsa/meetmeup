@@ -2,7 +2,7 @@ package database
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/go-pg/pg/v10"
 
 	"github.com/cynthiawilliamsa/meetmeup/graph/shared"
@@ -17,6 +17,9 @@ func (m *MeetMeUpRepo) GetMeetups() ([]*shared.Meetup, error) {
 	err := m.DB.Model(&meetups).Select()
 	if err != nil {
 		return nil, err
+	}
+	for _, m := range meetups {
+		fmt.Println(m)
 	}
 	return meetups, nil
 }
